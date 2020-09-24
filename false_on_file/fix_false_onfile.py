@@ -1,24 +1,32 @@
-import csv, os, xml.etree.ElementTree as ET
+import csv
+import os
+import xml.etree.ElementTree as ET
 
-os.chdir(r"C:\Users\LChau\OneDrive\Seko Help\files")
 
-filename = "90410242013_EXCEL_ON_FILE_HAWBS.csv"
+csvlist = [csvfile for csvfile in os.listdir() if csvfile.endswith('.csv')]
+xmllist = [xmlfile for xmlfile in os.listdir() if xmlfile.endswith('.xml')]
 
-with open(filename) as csvfile:
-    reader = csv.DictReader(csvfile)
-    hawbs = {str(row["Hawb"]) for row in reader}
+for csvfile, xmlfile in zip(csvlist, xmllist):
+    with open(csvfile, newline='', encoding='utf-8-sig') as f:
+        reader = csv.DictReader(f, dialect='excel')
+        hawbs = {str(row["HAWB"]) for row in reader}
 
-xmlfile = "904-10242013.xml"
+        # New list to ensure all hawbs in list has length 11.
+        new_hawbs = []
+        for hawb in hawbs:
+            while len(hawb) < 11:
+                hawb = '0' + hawb
+            new_hawbs.append(hawb)
 
-with open(xmlfile, "rb") as xfile:
-    parsed_xml = ET.parse(xfile)
+    with open(xmlfile, "rb") as xfile:
+        parsed_xml = ET.parse(xfile)
 
-parsed_xml_root = parsed_xml.getroot()
+    parsed_xml_root = parsed_xml.getroot()
 
-parsed_list = parsed_xml_root.findall("ENTRY")
+    parsed_list = parsed_xml_root.findall("ENTRY")
 
-for item in parsed_list:
-    if item.find("MANIFEST").find("HOUSE").text not in hawbs:
-        parsed_xml_root.remove(item)
+    for item in parsed_list:
+        if item.find("MANIFEST").find("HOUSE").text not in new_hawbs:
+            parsed_xml_root.remove(item)
 
-parsed_xml.write("new_file.xml", xml_declaration=True)
+    parsed_xml.write(f"new_file {csvfile.split('.')[0]}.xml", xml_declaration=True)
