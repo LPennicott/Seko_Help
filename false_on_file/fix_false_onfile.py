@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 csvlist = [csvfile for csvfile in os.listdir() if csvfile.endswith('.csv')]
 xmllist = [xmlfile for xmlfile in os.listdir() if xmlfile.endswith('.xml')]
 
+# Open csvfile for list of HAWB Entries that need to be extracted from the xml file
 for csvfile, xmlfile in zip(csvlist, xmllist):
     with open(csvfile, newline='', encoding='utf-8-sig') as f:
         reader = csv.DictReader(f, dialect='excel')
@@ -22,9 +23,10 @@ for csvfile, xmlfile in zip(csvlist, xmllist):
         parsed_xml = ET.parse(xfile)
 
     parsed_xml_root = parsed_xml.getroot()
-
     parsed_list = parsed_xml_root.findall("ENTRY")
 
+    # if the Entry Element does not contain a HAWB in the csv file,
+    # remove the entire Entry Element from the file.
     for item in parsed_list:
         if item.find("MANIFEST").find("HOUSE").text not in new_hawbs:
             parsed_xml_root.remove(item)
