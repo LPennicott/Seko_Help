@@ -3,3 +3,5 @@
 *.csv
 .vscode/settings.json
 .idea/Seko_Help.iml
+*.pyc
+*.log
