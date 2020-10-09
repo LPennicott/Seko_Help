@@ -1,18 +1,20 @@
 import csv
+import logging
 import os
 import re
-import logging
 import xml.etree.ElementTree as ET
 
 
 def process_files(csvfile, xmlfile, save_location):
     logging.basicConfig(
-        filename=f'{save_location}{os.sep}{xmlfile.split("/")[-1].split()[0]}.log',
+        filename=f'{save_location}{os.sep}'
+                 f'{xmlfile.split("/")[-1].split(".")[0]}.log',
         level=logging.DEBUG,
         format="%(asctime)s:%(levelname)s:%(message)s"
     )
 
-    # Open csvfile for list of HAWB Entries that need to be extracted from the xml file
+    # Open csvfile for list of HAWB Entries that need to be extracted from
+    # the xml file
     with open(csvfile, newline='', encoding='utf-8-sig') as f:
         reader = csv.DictReader(f, dialect='excel')
 
@@ -23,7 +25,7 @@ def process_files(csvfile, xmlfile, save_location):
                 if result := re.match('hawb', fieldname, re.IGNORECASE):
                     name = result.group(0)
 
-        # collect hawbs to compare against hawb nodes in xml file
+            # collect hawbs to compare against hawb nodes in xml file
             hawbs = {str(row[name]) for row in reader}
         except:
             logging.error("Exception Occurred: ", exc_info=True)
@@ -50,11 +52,13 @@ def process_files(csvfile, xmlfile, save_location):
         if item.find("MANIFEST").find("HOUSE").text not in new_hawbs:
             parsed_xml_root.remove(item)
 
-    csvname = csvfile.split('/')[-1].split()[0]
+    csvname = csvfile.split('/')[-1].split(".")[0]
 
-    parsed_xml.write(f"{save_location}{os.sep}{csvname}.xml", xml_declaration=True)
+    parsed_xml.write(f"{save_location}{os.sep}{csvname}.xml",
+                     xml_declaration=True)
     return
 
 
 if __name__ == '__main__':
-    process_files('29736634846_ON_FILE_HAWBS_1.CSV', '297-36634846.xml', r'D:\GitHub\Seko_Help\\')
+    process_files('29736634846_ON_FILE_HAWBS_1.CSV', '297-36634846.xml',
+                  r'D:\GitHub\Seko_Help\\')
