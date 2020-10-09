@@ -18,7 +18,6 @@ event, values = window.read()
 csvfile = values['-CSVFILE-']
 xmlfile = values['-XMLFILE-']
 save_location = values['-SAVE_LOCATION-']
-print(save_location)
 window.close()
 
 if csvfile.endswith('csv') and xmlfile.endswith('xml'):
