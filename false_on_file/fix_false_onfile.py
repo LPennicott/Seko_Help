@@ -22,7 +22,7 @@ def process_files(csvfile, xmlfile, save_location):
         # it is found and selected to iterate through
         try:
             for fieldname in reader.fieldnames:
-                if result := re.match('hawb', fieldname, re.IGNORECASE):
+                if result := re.match('hawb[s*]', fieldname, re.IGNORECASE):
                     name = result.group(0)
 
             # collect hawbs to compare against hawb nodes in xml file
@@ -39,6 +39,8 @@ def process_files(csvfile, xmlfile, save_location):
             new_hawbs.append(hawb)
 
         logging.debug(f'{new_hawbs}')
+        logging.debug((f'Processing {xmlfile.split("/")[-1]} and '
+                        f'{csvfile.split("/")[-1]}'))
 
     with open(xmlfile, "rb") as xfile:
         parsed_xml = ET.parse(xfile)
