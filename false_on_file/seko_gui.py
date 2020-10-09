@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-from . import fix_false_online as fixit
+from fix_false_onfile import process_files
 
 sg.theme('Light Blue 2')
 
@@ -18,8 +18,9 @@ event, values = window.read()
 csvfile = values['-CSVFILE-']
 xmlfile = values['-XMLFILE-']
 save_location = values['-SAVE_LOCATION-']
-
 window.close()
 
 if csvfile.endswith('csv') and xmlfile.endswith('xml'):
-    fixit.process_files(csvfile, xmlfile, save_location)
+    process_files(csvfile, xmlfile, save_location)
+else:
+    print('error')

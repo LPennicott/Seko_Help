@@ -1,17 +1,33 @@
 import csv
 import os
 import re
+import logging
 import xml.etree.ElementTree as ET
 
 
 def process_files(csvfile, xmlfile, save_location):
+    logging.basicConfig(
+        filename=f'{save_location}{os.sep}{xmlfile.split("/")[-1].split()[0]}.log',
+        level=logging.DEBUG,
+        format="%(asctime)s:%(levelname)s:%(message)s"
+    )
 
-    result = re.match(r'hawb', re.IGNORECASE)
     # Open csvfile for list of HAWB Entries that need to be extracted from the xml file
     with open(csvfile, newline='', encoding='utf-8-sig') as f:
         reader = csv.DictReader(f, dialect='excel')
 
-        hawbs = {str(row[result]) for row in reader}
+        # ensure that as long as there is a field that contains hawbs
+        # it is found and selected to iterate through
+        try:
+            for fieldname in reader.fieldnames:
+                if result := re.match('hawb', fieldname, re.IGNORECASE):
+                    name = result.group(0)
+
+        # collect hawbs to compare against hawb nodes in xml file
+            hawbs = {str(row[name]) for row in reader}
+        except:
+            logging.error("Exception Occurred: ", exc_info=True)
+        logging.debug(f'{len(hawbs)}')
 
         # New list to ensure all hawbs in list has length 11.
         new_hawbs = []
@@ -19,6 +35,8 @@ def process_files(csvfile, xmlfile, save_location):
             while len(hawb) < 11:
                 hawb = '0' + hawb
             new_hawbs.append(hawb)
+
+        logging.debug(f'{new_hawbs}')
 
     with open(xmlfile, "rb") as xfile:
         parsed_xml = ET.parse(xfile)
@@ -32,6 +50,11 @@ def process_files(csvfile, xmlfile, save_location):
         if item.find("MANIFEST").find("HOUSE").text not in new_hawbs:
             parsed_xml_root.remove(item)
 
-    save = os.path.join(save_location, csvfile.split('.')[0])
-    parsed_xml.write(f"{save}.xml", xml_declaration=True)
+    csvname = csvfile.split('/')[-1].split()[0]
+
+    parsed_xml.write(f"{save_location}{os.sep}{csvname}.xml", xml_declaration=True)
     return
+
+
+if __name__ == '__main__':
+    process_files('29736634846_ON_FILE_HAWBS_1.CSV', '297-36634846.xml', r'D:\GitHub\Seko_Help\\')
