@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+import sys
 
 from fix_false_onfile import process_files
 
@@ -15,6 +16,9 @@ layout = [[sg.Text('Select csv file')],
 window = sg.Window('Select File', layout)
 
 event, values = window.read()
+
+if event == sg.WIN_CLOSED:
+    sys.exit()
 
 csvfile = values['-CSVFILE-']
 xmlfile = values['-XMLFILE-']
