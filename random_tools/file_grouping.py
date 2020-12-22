@@ -8,6 +8,7 @@ import gui_tools
 def csv_collection():
 
     folder = gui_tools._standard_get_folder()
+    os.chdir(folder)
     files = os.listdir(folder)
     csv_files = [file for file in files if file.endswith(".csv")]
 
@@ -98,8 +99,12 @@ def new_csv_file(csv_content):
         "total_weight",
     ]
 
-    with open(f"{datetime.date.today()}", "w") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    with open(
+        f"{datetime.date.today()}.csv", "w", encoding="utf-8-sig", newline=""
+    ) as csvfile:
+        writer = csv.DictWriter(
+            csvfile, fieldnames=fieldnames, dialect="excel"
+        )
         writer.writeheader()
         for row in csv_content:
             writer.writerow(row)
@@ -108,8 +113,6 @@ def new_csv_file(csv_content):
 
 
 if __name__ == "__main__":
-    item = csv_collection(
-        r"C:\Users\LChau\OneDrive\Data Analysis Projects\Seko\morningg"
-    )
+    item = csv_collection()
 
     new_csv_file(item)
