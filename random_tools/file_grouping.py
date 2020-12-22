@@ -1,10 +1,13 @@
 import csv
 import os
 import datetime
+import sys
+from . import gui.gui_tools
 
 
-def csv_collection(folder):
+def csv_collection():
 
+    folder = gui.gui_tools._standard_get_folder()
     files = os.listdir(folder)
     csv_files = [file for file in files if file.endswith(".csv")]
 
